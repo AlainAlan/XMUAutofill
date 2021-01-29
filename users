@@ -1,4 +1,5 @@
 # Add one user in a line
 # username pwd
-10086 0000
-10010 0000
+# 账号+一个空格+密码
+# 替换下面的这行内容
+11111111111111 mima
