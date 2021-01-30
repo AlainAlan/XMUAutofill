@@ -1,5 +1,5 @@
 from selenium import webdriver
-import time
+import time, datetime
 import sys
 
 
@@ -8,8 +8,6 @@ logarchive = 'logarchive.txt'
 userfile = 'users'  #存放用户名密码的文件地址，可以随意修改
 url = 'https://xmuxg.xmu.edu.cn/login'
 chromedriver = 'C:/chromedriver.exe' #修改此处路径为你放置chromedriver.exe的位置
-go_to_daka = True
-
 
 def daka(a, b):
 	'''去打卡'''
@@ -106,6 +104,9 @@ def daka(a, b):
 	driver.close()
 	return output
 
+
+
+
 with open(userfile, 'r', encoding='UTF-8') as users:
 	today_date = (time.strftime('%Y_%m_%d', time.localtime(time.time())))
 	lines = users.readlines()
@@ -113,6 +114,28 @@ with open(userfile, 'r', encoding='UTF-8') as users:
 		line = line.strip()
 		if line[0] == '#':
 			continue
+		go_to_daka = True
+	# 范围时间
+		open_time = datetime.datetime.strptime(str(datetime.datetime.now().date())+'7:00', '%Y-%m-%d%H:%M')
+		close_time = datetime.datetime.strptime(str(datetime.datetime.now().date())+'19:30', '%Y-%m-%d%H:%M')
+		 
+		# 当前时间
+		now_time = datetime.datetime.now()
+		if now_time < open_time:
+			print("你今天怎么起那么早，还是说还没睡？？\n还不到打卡时间，你记得七点之后打卡")
+			time.sleep(5)
+			go_to_daka = False
+			break
+
+		elif now_time > close_time:
+			print("已经过了打卡时间了。你确定今天系统又出毛病了？")
+			maobing = input("如果确定系统还没关闭请输入1\n")
+			if str(maobing) == "1":
+				go_to_daka = True
+			else:
+				go_to_daka = False
+				break
+
 		a, b = line.split(' ')
 		# 是否清空日志
 		renew_log = False
@@ -158,7 +181,7 @@ with open(userfile, 'r', encoding='UTF-8') as users:
 
 			# 写入新日志
 			renewing_log = open(logfile, 'w', encoding='UTF-8')
-			renewing_log.write(cur_time + " " + a + " 旧的日志已被归档在" + logarchive + "内\n")
+			renewing_log.write(cur_time + " " + a + " 旧的日志已被归档\n")
 			renewing_log.close()
 
 		with open(logfile, 'a', encoding='UTF-8') as log:
