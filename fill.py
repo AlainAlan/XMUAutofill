@@ -9,8 +9,8 @@ userfile = 'users'  #存放用户名密码的文件地址，可以随意修改
 url = 'https://xmuxg.xmu.edu.cn/login'
 chromedriver = 'C:/chromedriver.exe' #修改此处路径为你放置chromedriver.exe的位置
 
-def daka(a, b):
-	'''去打卡'''
+def zhen_daka(a, b):
+
 	driver = webdriver.Chrome(chromedriver)
 	run = True
 	now = time.time()
@@ -104,8 +104,30 @@ def daka(a, b):
 	driver.close()
 	return output
 
+def daka(a, b):
+	'''去打卡'''
 
+	# 范围时间
+	open_time = datetime.datetime.strptime(str(datetime.datetime.now().date())+'7:00', '%Y-%m-%d%H:%M')
+	close_time = datetime.datetime.strptime(str(datetime.datetime.now().date())+'19:30', '%Y-%m-%d%H:%M')
+	 
+	# 当前时间
+	now_time = datetime.datetime.now()
+	
+	if now_time < open_time:
+		print("你今天怎么起那么早，还是说还没睡？？\n还不到打卡时间，你记得七点之后打卡")
+		time.sleep(5)
+		output = "时辰未到"
 
+	elif now_time > close_time:
+		print("已经过了打卡时间了。你确定今天系统又出毛病了？")
+		maobing = input("如果确定系统还没关闭请输入1\n")
+		if str(maobing) != "1":
+			output = "吉时已过"
+		else:
+			output = zhen_daka(a,b)
+
+	return output
 
 with open(userfile, 'r', encoding='UTF-8') as users:
 	today_date = (time.strftime('%Y_%m_%d', time.localtime(time.time())))
@@ -114,27 +136,9 @@ with open(userfile, 'r', encoding='UTF-8') as users:
 		line = line.strip()
 		if line[0] == '#':
 			continue
+		
 		go_to_daka = True
-	# 范围时间
-		open_time = datetime.datetime.strptime(str(datetime.datetime.now().date())+'7:00', '%Y-%m-%d%H:%M')
-		close_time = datetime.datetime.strptime(str(datetime.datetime.now().date())+'19:30', '%Y-%m-%d%H:%M')
-		 
-		# 当前时间
-		now_time = datetime.datetime.now()
-		if now_time < open_time:
-			print("你今天怎么起那么早，还是说还没睡？？\n还不到打卡时间，你记得七点之后打卡")
-			time.sleep(5)
-			go_to_daka = False
-			break
 
-		elif now_time > close_time:
-			print("已经过了打卡时间了。你确定今天系统又出毛病了？")
-			maobing = input("如果确定系统还没关闭请输入1\n")
-			if str(maobing) == "1":
-				go_to_daka = True
-			else:
-				go_to_daka = False
-				break
 
 		a, b = line.split(' ')
 		# 是否清空日志
