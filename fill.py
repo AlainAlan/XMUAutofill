@@ -1,6 +1,8 @@
 from selenium import webdriver
-import time, datetime
-import sys
+import time
+from datetime import datetime
+import os
+import msvcrt
 
 
 logfile = 'log.txt' #打印日志文件的地址，可以随意修改
@@ -8,6 +10,22 @@ logarchive = 'logarchive.txt'
 userfile = 'users'  #存放用户名密码的文件地址，可以随意修改
 url = 'https://xmuxg.xmu.edu.cn/login'
 chromedriver = 'C:/chromedriver.exe' #修改此处路径为你放置chromedriver.exe的位置
+
+def getInput(timeout = 20):
+	# https://blog.csdn.net/weixin_38604589/article/details/89295922
+	start_time = time.time()
+	input = ''
+	while True:
+		if msvcrt.kbhit():
+			# https://blog.csdn.net/zyl_wjl_1413/article/details/84864482
+			input = msvcrt.getche()
+		if len(input) != 0 or (time.time() - start_time) > timeout:
+			break
+	if len(input) > 0:
+		# print(str(input))
+		return str(input)
+	else:
+		return "超时"
 
 def zhen_daka(a, b):
 
@@ -108,11 +126,11 @@ def daka(a, b):
 	'''去打卡'''
 
 	# 范围时间
-	open_time = datetime.datetime.strptime(str(datetime.datetime.now().date())+'7:00', '%Y-%m-%d%H:%M')
-	close_time = datetime.datetime.strptime(str(datetime.datetime.now().date())+'19:30', '%Y-%m-%d%H:%M')
+	open_time = datetime.strptime(str(datetime.now().date())+'7:00', '%Y-%m-%d%H:%M')
+	close_time = datetime.strptime(str(datetime.now().date())+'19:30', '%Y-%m-%d%H:%M')
 	 
 	# 当前时间
-	now_time = datetime.datetime.now()
+	now_time = datetime.now()
 	
 	if now_time < open_time:
 		print("你今天怎么起那么早，还是说还没睡？？\n还不到打卡时间，你记得七点之后打卡")
@@ -121,12 +139,17 @@ def daka(a, b):
 
 	elif now_time > close_time:
 		print("已经过了打卡时间了。你确定今天系统又出毛病了？")
-		maobing = input("如果确定系统还没关闭请输入1\n")
-		if str(maobing) != "1":
-			output = "吉时已过"
-		else:
+		print("如果确定系统还没关闭请输入1\n")
+		maobing = getInput()
+		if maobing == "b'1'":
 			output = zhen_daka(a,b)
-
+		elif maobing == "超时":
+			output = "吉时已过且反应超时"
+		else:
+			output = "风太大我没听清"
+	else:
+		output = zhen_daka(a,b)
+	
 	return output
 
 with open(userfile, 'r', encoding='UTF-8') as users:
@@ -138,7 +161,6 @@ with open(userfile, 'r', encoding='UTF-8') as users:
 			continue
 		
 		go_to_daka = True
-
 
 		a, b = line.split(' ')
 		# 是否清空日志
