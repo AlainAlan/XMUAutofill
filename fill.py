@@ -182,7 +182,7 @@ with open(userfile, 'r', encoding='UTF-8') as users:
 						print("不是这人。")
 						continue
 					else:
-						if datetime_and_output[4].strip() not in ["已打卡", "打卡成功"]:
+						if datetime_and_output[4].strip() not in ["已打卡", "打卡成功", "日志显示已打卡"]:
 							print("这人还没打卡。")
 							continue
 						else:
