@@ -12,9 +12,9 @@
 
 众所周知，都用Linux了就不需要教程了。以下仅针对Windows用户。<br>
 
-* Windows 一般人已经有了 <br>
-* Chrome 没有就去下<br>
-* [chromedriver](http://npm.taobao.org/mirrors/chromedriver/) <br>
+* 【Windows】 一般人已经有了 <br>
+* 【Chrome】 没有就去下<br>
+* 【[chromedriver](http://npm.taobao.org/mirrors/chromedriver/)】 <br>
 
 ```
 # windows 查找chrome版本,在浏览器地址栏中输入
@@ -26,8 +26,8 @@ chrome://version
 # 没有更好的编辑器可以使用记事本打开py文件
 
 ```
-* Python 问百度，很简单就能装好
-* Selenium
+* 【Python】 问百度，很简单就能装好
+* 【Selenium】
 打开PowerShell（找不到可以搜索，或者在某文件夹下Shift+空白处右键点击，运行PowerShell），输入：
 ```
 pip3 install selenium
