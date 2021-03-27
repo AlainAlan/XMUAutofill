@@ -3,13 +3,49 @@ import time
 from datetime import datetime
 import os
 import msvcrt
-
+import smtplib
+import email
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.header import Header
+import random
 
 logfile = 'log.txt' #打印日志文件的地址，可以随意修改
 logarchive = 'logarchive.txt'
 userfile = 'users'  #存放用户名密码的文件地址，可以随意修改
 url = 'https://xmuxg.xmu.edu.cn/login'
 chromedriver = 'C:/chromedriver.exe' #修改此处路径为你放置chromedriver.exe的位置
+
+def send_mail(content):
+	'''
+	https://zhuanlan.zhihu.com/p/89868804
+	下面的中文内容需要自己调整
+	'''
+	mail_host = "smtp.126.com"
+	mail_sender = "发送@126.com"
+	mail_license = "从邮箱设置配置后复制"
+	mail_receivers = ["接收@qq.com"]
+	subject_content = content
+	mm = MIMEMultipart('related')
+	mm["From"] = "DailyHealthReport<发送@126.com>"
+	mm["To"] = "Name<接收@qq.com>"
+	mm["Subject"] = Header(subject_content,'utf-8')
+	# 下面用于配置邮件的内容
+	# qieyun.txt是三百多个常用字在《广韵》中的音韵地位
+	# 可以搞成自己喜欢的东西
+	with open('qieyun.txt','r', encoding='UTF-8') as a:
+		lines = a.readlines()
+		line = random.choice(lines)
+	body_content = line
+	message_text = MIMEText(body_content,"plain","utf-8")
+	mm.attach(message_text)
+	stp = smtplib.SMTP()
+	stp.connect(mail_host, 25)  
+	stp.set_debuglevel(1)
+	stp.login(mail_sender,mail_license)
+	stp.sendmail(mail_sender, mail_receivers, mm.as_string())
+	print("邮件发送成功")
+	stp.quit()
 
 def getInput(timeout = 20):
 	# https://blog.csdn.net/weixin_38604589/article/details/89295922
@@ -213,5 +249,14 @@ with open(userfile, 'r', encoding='UTF-8') as users:
 		with open(logfile, 'a', encoding='UTF-8') as log:
 			log.write(cur_time + ' ' + a + ' ' + output + '\n')
 			print("记录日志")
-
+		# 如果不想配置邮件发送功能，用“#”注释掉下面几行即可
+		# 如果只想在打卡失败时接收邮件，可以把下面的列表改成['已打卡','日志显示已打卡','打卡成功']
+		# 这样将会忽略打卡成功
+		if output not in ['已打卡','日志显示已打卡']:
+			send_mail(output)
+			print('已发送邮件')
+		# send_mail(output)
+		# 取消注释上面这一行（而注释掉前面几行），可以无条件发送邮件
+		
+		
 		print('End\n')
